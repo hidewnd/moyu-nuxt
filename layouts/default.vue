@@ -46,7 +46,7 @@
   </div>
 </template>
 
-<style scoped>
+<style>
 * {
   margin: 0;
   padding: 0;
@@ -63,7 +63,6 @@ body{
 }
 
 .main-container {
-  background: #f2f2;
   width: 70%;
   margin: 0 auto;
 }
