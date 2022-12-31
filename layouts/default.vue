@@ -63,7 +63,7 @@ body{
 }
 
 .main-container {
-  width: 70%;
+  width: 50%;
   margin: 0 auto;
 }
 
@@ -106,8 +106,8 @@ body{
   line-height: 61px;
 }
 .center-part .menu span{
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 20px;
+  font-weight: 400;
   margin-left: 10px;
   margin-right: 10px;
   cursor: pointer;

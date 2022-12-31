@@ -1,0 +1,37 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "908535",
+      "name": "添加图片",
+      "font_class": "tianjiatupian",
+      "unicode": "e681",
+      "unicode_decimal": 59009
+    },
+    {
+      "icon_id": "5979941",
+      "name": "标签-01",
+      "font_class": "biaoqian-",
+      "unicode": "e619",
+      "unicode_decimal": 58905
+    },
+    {
+      "icon_id": "12097446",
+      "name": "话题",
+      "font_class": "huati",
+      "unicode": "e658",
+      "unicode_decimal": 58968
+    },
+    {
+      "icon_id": "18656433",
+      "name": "表情",
+      "font_class": "hanhan-01-01",
+      "unicode": "e679",
+      "unicode_decimal": 59001
+    }
+  ]
+}

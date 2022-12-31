@@ -1,8 +1,8 @@
 {
-  "NuxtLogo": {
-    "description": "Auto imported from components/NuxtLogo.vue"
+  "EmojiPanel": {
+    "description": "Auto imported from components/EmojiPanel.vue"
   },
-  "Tutorial": {
-    "description": "Auto imported from components/Tutorial.vue"
+  "RichTextInput": {
+    "description": "Auto imported from components/RichTextInput.vue"
   }
 }
