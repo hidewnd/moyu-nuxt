@@ -5,8 +5,7 @@
       contenteditable="true"
       spellcheck="false"
       id="input-box"
-      :placeholder="content"
-      v-html="content"
+      :placeholder="hintContent"
     ></div>
   </div>
 </template>
@@ -23,26 +22,28 @@ export default {
       default: "",
     },
   },
-  data() {
-    return {
-      hintContent: "请输入内容",
-    };
-  },
-  methods: {
-    updateContent(value){
-      let inputBox = document.getElementById("input-box");
-      if(value != inputBox.innerHTML){
-        inputBox.innerHTML = value;
-      }
-
-    },
-    requestFocus(){
-      let inputBox = document.getElementById("input-box");
-      inputBox.focus();
+  data(){
+    return{
+      hintContent: '',
     }
   },
+  methods: {
+    updateContent(value) {
+      let inputBox = document.getElementById("input-box");
+      if (value != inputBox.innerHTML) {
+        inputBox.innerHTML = value;
+      }
+    },
+    requestFocus() {
+      let inputBox = document.getElementById("input-box");
+      inputBox.focus();
+    },
+  },
   mounted() {
+    // 设置提示语
+    this.hintContent = this.content;
     let inputBox = document.getElementById("input-box");
+    //内容发生更新
     if (inputBox) {
       let THIS = this;
       inputBox.addEventListener("input", function () {
@@ -50,6 +51,11 @@ export default {
         THIS.$emit("onContentChange", inputBox.innerHTML);
       });
     }
+  },
+  watch: {
+    content(newVal) {
+      this.updateContent(newVal);
+    },
   },
 };
 </script>

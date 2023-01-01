@@ -89,6 +89,7 @@ export default {
 .delete-history-btn {
   color: #0084ff;
   cursor: pointer;
+  padding-right: 5px;
 }
 .emoji-title {
   display: flex;
@@ -108,8 +109,8 @@ export default {
   transition: transform 0.3s;
 }
 .emoji-panel-container {
-  overflow-x: scroll;
-  overflow-y: hidden;
+  overflow-y: scroll;
+  overflow-x: hidden;
   height: 300px;
 }
 .emoji-panel-container::-webkit-scrollbar-track {
@@ -119,7 +120,7 @@ export default {
   border-radius: 2em;
 }
 .emoji-panel-container::-webkit-scrollbar-thumb {
-  background-color: #f9fafb;
+  background-color: #E5E6EB;
   -webkit-border-radius: 2em;
   -moz-border-radius: 2em;
   border-radius: 2em;

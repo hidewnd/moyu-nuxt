@@ -26,10 +26,20 @@
         </div>
         <div class="post-btn-part clear-fix">
           <div class="ex-content-btn float-left">
-            <span><i class="iconfont icon-tianjiatupian"></i>图片</span>
-            <span  @click="showEmoji=!showEmoji"><i class="iconfont icon-hanhan-01-01"></i>表情</span>
-            <span><i class="iconfont icon-biaoqian-"></i>链接</span>
-            <span><i class="iconfont icon-huati"></i>话题</span>
+            <span class="ex-btn-item"><i class="iconfont icon-tianjiatupian"></i>图片</span>
+            <span class="ex-btn-item" @click="showEmoji = !showEmoji"
+              ><i class="iconfont icon-hanhan-01-01"></i>表情</span
+            >
+            <el-popover placement="bottom-start" width="400" trigger="click">
+              <div class="link-input-part">
+                <el-input class="link-input" placeholder="eg:https://www.baidu.com" size="small"></el-input>
+                <el-button size="small" type="primary">添加</el-button>
+              </div>
+              <span class="ex-btn-item" slot="reference">
+                <i class="iconfont icon-biaoqian-"></i>链接
+              </span>
+            </el-popover>
+            <span class="ex-btn-item"><i class="iconfont icon-huati"></i>话题</span>
           </div>
           <div class="float-right">
             <el-button size="small" :disabled="true" type="primary">
@@ -37,7 +47,7 @@
             </el-button>
           </div>
         </div>
-        <div class="emoji-part" v-if="showEmoji">
+        <div class="emoji-part" id="emoji-part" v-if="showEmoji">
           <emoji-panel-vue @emojiClick="onEmojiClick"></emoji-panel-vue>
         </div>
       </div>
@@ -58,6 +68,9 @@ export default {
     return {
       inputContent: "来摸个鱼吧",
       showEmoji: false,
+      moyu: {
+
+      }
     };
   },
   components: {
@@ -73,25 +86,38 @@ export default {
     }
   },
   methods: {
-    onEmojiClick(emojiUrl){
+    onEmojiClick(emojiUrl) {
       let inputBox = this.$refs.richTextInput;
-      if(document.activeElement !== inputBox){
+      if (document.activeElement !== inputBox) {
         inputBox.requestFocus();
       }
       let imgTag = `<img src="${emojiUrl}" class="emoji">`;
-      document.execCommand('insertHTML', false, imgTag);
-    }
-  }
+      document.execCommand("insertHTML", false, imgTag);
+    },
+  },
+  mounted() {
+    let THIS = this;
+    document.addEventListener("mouseup", (e) => {
+      let emojiPart = document.getElementById("emoji-part");
+      if (emojiPart && !emojiPart.contains(e.target)) {
+        THIS.showEmoji = false;
+      }
+    });
+  },
 };
 </script>
 <style>
-.emoji-part{
+.link-input{
+  width: 329px;
+  margin-right: 10px;
+}
+.emoji-part {
   padding-top: 20px;
 }
 .ex-content-btn i {
   margin-right: 4px;
 }
-.ex-content-btn span {
+.ex-content-btn .ex-btn-item {
   margin-right: 30px;
   cursor: pointer;
   font-size: 14px;
@@ -123,7 +149,7 @@ export default {
 }
 
 .centent-center-part {
-  width: 64%;
+  width: 54%;
   height: 100%;
   min-height: 500px;
   margin-right: 1%;
@@ -171,7 +197,7 @@ export default {
   background: rgba(0, 132, 255, 0.1);
 }
 .centent-right-part {
-  width: 20%;
+  width: 30%;
   background: #ff2;
   height: 800px;
 }
