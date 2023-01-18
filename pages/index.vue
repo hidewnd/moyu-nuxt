@@ -26,12 +26,19 @@
         </div>
         <div class="post-btn-part clear-fix">
           <div class="ex-content-btn float-left">
-            <span class="ex-btn-item">
+            <span class="ex-btn-item" @click="showImageUpload()">
               <i class="iconfont icon-tianjiatupian"></i>图片
             </span>
-            <span class="ex-btn-item" @click="showEmoji = !showEmoji">
-              <i class="iconfont icon-hanhan-01-01"></i>表情
-            </span>
+            <!-- 表情选择 -->
+            <el-popover placement="bottom-start" width="400" trigger="click">
+              <!-- 表情面板 -->
+              <div class="emoji-part">
+                <emoji-panel-vue @emojiClick="onEmojiClick"></emoji-panel-vue>
+              </div>
+              <span class="ex-btn-item" slot="reference">
+                <i class="iconfont icon-hanhan-01-01"></i>表情
+              </span>
+            </el-popover>
             <!-- 链接输入 -->
             <el-popover placement="bottom-start" width="400" trigger="click">
               <div class="link-input-part">
@@ -93,13 +100,9 @@
             </el-button>
           </div>
         </div>
-        <!-- 表情面板 -->
-        <div class="emoji-part" id="emoji-part" v-if="showEmoji">
-          <emoji-panel-vue @emojiClick="onEmojiClick"></emoji-panel-vue>
-        </div>
         <!-- 链接解析面板 -->
         <div class="url-info-part clear-fix" v-if="fish.url && fish.urlTitle">
-          <div class="url-left-part float-lefet">
+          <div class="url-left-part float-left">
             <img :src="fish.urlCover" />
           </div>
           <div class="url-right-part float-left">
@@ -108,14 +111,37 @@
           </div>
           <i class="el-icon-close link-close" @click="closeLink"></i>
         </div>
-        <el-upload
-          class="avatar-uploader"
-          :action="imageUplodUrl"
-          list-type="picture-part"
-          :on-success="onImageUploadSuccess"
-        >
-          <i class="el-icon-plus"></i>
-        </el-upload>
+        <!-- 图片上传预览面板 -->
+        <div class="image-upload-part" v-if="isImagePartShow">
+          <div class="image-list clear-fix">
+            <div
+              class="image-item float-left"
+              v-for="(item, index) in fish.images"
+              :key="index"
+              @mouseenter="onImageMouseEnter(index)"
+              @mouseleave="onImageMouseLeave(index)"
+            >
+              <img :src="item" :alt="'上传图片' + index" />
+              <div class="image-cvoer" :id="'image-cvoer' + index">
+                <span class="el-icon-zoom-in"></span>
+                <span class="el-icon-delete"></span>
+              </div>
+            </div>
+            <div class="upload-btn-box float-left" v-if="isImageUploadShow">
+              <el-upload
+                :action="imageUploadUrl"
+                name="file"
+                :show-file-list="false"
+                :with-credentials="true"
+                class="avatar-uploader"
+                :on-success="onImageUploadSuccess"
+                list-type="picture-card"
+              >
+                <i class="el-icon-plus"></i>
+              </el-upload>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- 右部分 -->
@@ -132,17 +158,17 @@ export default {
   name: "IndexPage",
   data() {
     return {
-      imageUplodUrl: "",
-
+      imageUploadUrl: api.baseUrl + "/my/image/moyu",
+      isImageUploadShow: false,
+      isImagePartShow: false,
       inputContent: "来摸个鱼吧",
-      showEmoji: false,
       fish: {
         url: "",
         content: "",
         topicId: "",
         urlTitle: "",
         urlCover: "",
-        iamges: [],
+        images: [],
       },
       topicList: [],
       isTopicListShow: false,
@@ -161,8 +187,41 @@ export default {
     }
   },
   methods: {
-    onImageUploadSuccess() {
-      
+    onImageMouseEnter(index){
+      let cover = document.getElementById('image-cvoer' + index);
+      if(cover){
+        cover.style.display = 'block';
+      }
+
+
+    },
+    onImageMouseLeave(index){
+      let cover = document.getElementById('image-cvoer' + index);
+      if(cover){
+        cover.style.display = 'none';
+      }
+    },
+    showImageUpload() {
+      this.isImagePartShow = !this.isImagePartShow;
+      if (this.fish.images.length < 9){
+        this.isImageUploadShow = !this.isImageUploadShow;
+      }
+    },
+    onImageUploadSuccess(response, file, fileList) {
+      if (!response.success) {
+        this.$message.error(response.msg);
+        for (let index = 0; index < fileList.length; index++) {
+          if (fileList[index].name === file.name) {
+            fileList.splice(index, 1);
+          }
+        }
+      } else {
+        this.fish.images.push(response.obj);
+        this.$message.success(response.msg);
+        if (this.fish.images.length >= 9) {
+          this.isImageUploadShow = false;
+        }
+      }
     },
     onTopicItemClick(topicItemId) {
       this.fish.topicId = topicItemId;
@@ -174,11 +233,11 @@ export default {
       this.fish.urlCover = "";
     },
     parseUrl() {
-      api.parseUrl(thih.fish.url).then((result) => {
+      api.parseUrl(this.fish.url).then((result) => {
         if (result.code == api.CODE_SUCCESS) {
           this.fish.urlTitle = result.obj.title;
           this.fish.urlCover = result.obj.cover;
-          this.$message.succcess(result.msg);
+          this.$message.success(result.msg);
         } else {
           this.$message.error(result.msg);
         }
@@ -201,18 +260,48 @@ export default {
     },
   },
   mounted() {
-    let THIS = this;
-    document.addEventListener("mouseup", (e) => {
-      let emojiPart = document.getElementById("emoji-part");
-      if (emojiPart && !emojiPart.contains(e.target)) {
-        THIS.showEmoji = false;
-      }
-    });
     this.loadTopicList();
   },
 };
 </script>
 <style>
+.image-upload-part .image-item {
+  cursor: pointer;
+  position: relative;
+}
+.image-upload-part .image-item img {
+  width: 148px;
+  height: 148px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+  object-fit: cover;
+
+}
+.image-upload-part .image-item .image-cvoer{
+  position: absolute;
+  width: 148px;
+  height: 148px;
+  left: 0;
+  top: 0;
+  background: rgba(0, 0, 0, .3);
+  display: none;
+  text-align: center;
+  line-height: 148px;
+}
+
+.image-cvoer span {
+  color: white;
+  padding: 10px;
+}
+.image-cvoer span:hover{
+  opacity: .6;
+}
+
+.image-upload-part {
+  padding: 10px 10px 0;
+}
 .topic-list-part .topic-item:hover {
   cursor: pointer;
   background: hsla(0, 0%, 59.2%, 0.1);
@@ -282,7 +371,7 @@ export default {
   border-radius: 4px;
 }
 .url-left-part img {
-  width: 56px;
+  width: 120px;
   margin-right: 10px;
 }
 .url-right-part .url-title {
@@ -306,9 +395,6 @@ export default {
 .link-input {
   width: 329px;
   margin-right: 10px;
-}
-.emoji-part {
-  padding-top: 20px;
 }
 .ex-content-btn i {
   margin-right: 4px;
