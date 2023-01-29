@@ -8,7 +8,7 @@
       <img
         v-for="i in history"
         :key="i"
-        :src="'https://cdn.sunofbeaches.com/emoji/' + i + '.png'"
+        :src="emojiUrl + i + '.png'"
         class="emoji-item"
         @click="appendEmoji(i)"
       />
@@ -18,7 +18,7 @@
       <img
         v-for="i in 130"
         :key="i"
-        :src="'https://cdn.sunofbeaches.com/emoji/' + i + '.png'"
+        :src="emojiUrl + i + '.png'"
         class="emoji-item"
         @click="appendEmoji(i)"
       />
@@ -30,6 +30,7 @@
 export default {
   data() {
     return {
+      emojiUrl: 'https://cdn.sunofbeaches.com/emoji/',
       history: [1, 23, 45, 3, 4, 5],
     };
   },
@@ -39,7 +40,7 @@ export default {
       // if (document.activeElement !== inputIndex) {
       //   inputIndex.focus();
       // }
-      let targetUrl = "https://cdn.sunofbeaches.com/emoji/" + i + ".png";
+      let targetUrl = this.emojiUrl + i + ".png";
       this.$emit('emojiClick', targetUrl);
       // let imgTag = `<img src="${targetUrl}" class="emoji"`;
       // document.execCommand("insertHTML", false, imgTag);

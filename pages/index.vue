@@ -21,10 +21,10 @@
         <div class="post-box">
           <rich-text-input
             ref="richTextInput"
-            v-model="inputContent"
+            v-model="fish.content"
           ></rich-text-input>
         </div>
-        <div class="post-btn-part clear-fix">
+        <div class="post-btn-part clear-fix" id="post-btn-part">
           <div class="ex-content-btn float-left">
             <span class="ex-btn-item" @click="showImageUpload()">
               <i class="iconfont icon-tianjiatupian"></i>图片
@@ -40,7 +40,7 @@
               </span>
             </el-popover>
             <!-- 链接输入 -->
-            <el-popover placement="bottom-start" width="400" trigger="click">
+            <el-popover placement="bottom-start" width="400" trigger="click" v-model="isUrlInputShow">
               <div class="link-input-part">
                 <el-input
                   class="link-input"
@@ -72,7 +72,7 @@
                   class="topic-item clear-fix"
                   v-for="(item, index) in topicList"
                   :key="index"
-                  @click="onTopicItemClick(item.id)"
+                  @click="onTopicItemClick(item.id, item.name)"
                 >
                   <img :src="item.cover" alt="话题图标" />
                   <div class="topic-content">
@@ -93,9 +93,25 @@
                 <i class="iconfont icon-huati"></i>话题
               </span>
             </el-popover>
+            <!-- 话题预览模块 -->
+            <el-tag
+              v-if="selectedTopicName !== ''"
+              closable
+              @close="onTagClose"
+              size="medium"
+              effect="plain"
+              class="selected-topic"
+              >{{ selectedTopicName }}
+            </el-tag>
           </div>
+          <!-- 提交按钮 -->
           <div class="float-right">
-            <el-button size="small" :disabled="true" type="primary">
+            <el-button
+              size="small"
+              :disabled="fish.content.length === 0"
+              @click="doFishAdd"
+              type="primary"
+            >
               发布
             </el-button>
           </div>
@@ -123,10 +139,17 @@
             >
               <img :src="item" :alt="'上传图片' + index" />
               <div class="image-cvoer" :id="'image-cvoer' + index">
-                <span class="el-icon-zoom-in"></span>
-                <span class="el-icon-delete"></span>
+                <span
+                  class="el-icon-zoom-in"
+                  @click="doPreviewShow(item)"
+                ></span>
+                <span
+                  class="el-icon-delete"
+                  @click="doImageItemDelete(index)"
+                ></span>
               </div>
             </div>
+            <!-- 上传图标 -->
             <div class="upload-btn-box float-left" v-if="isImageUploadShow">
               <el-upload
                 :action="imageUploadUrl"
@@ -146,6 +169,11 @@
     </div>
     <!-- 右部分 -->
     <div class="centent-right-part float-right">123</div>
+    <div class="dialog-part">
+      <el-dialog :visible.sync="imagePreviewShow">
+        <img width="100%" :src="imagePreviewurl" alt="预览图片" />
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -158,13 +186,15 @@ export default {
   name: "IndexPage",
   data() {
     return {
+      isUrlInputShow: false,
+      imagePreviewurl: "",
+      imagePreviewShow: false,
       imageUploadUrl: api.baseUrl + "/my/image/moyu",
       isImageUploadShow: false,
       isImagePartShow: false,
-      inputContent: "来摸个鱼吧",
       fish: {
         url: "",
-        content: "",
+        content: "来摸个鱼吧",
         topicId: "",
         urlTitle: "",
         urlCover: "",
@@ -172,6 +202,7 @@ export default {
       },
       topicList: [],
       isTopicListShow: false,
+      selectedTopicName: "",
     };
   },
   components: {
@@ -187,24 +218,56 @@ export default {
     }
   },
   methods: {
-    onImageMouseEnter(index){
-      let cover = document.getElementById('image-cvoer' + index);
-      if(cover){
-        cover.style.display = 'block';
+    doFishAdd() {
+      if (this.fish.content.length === 0) {
+        this.$message.error("摸鱼没有内容不行的呀");
+        return;
       }
-
-
+      api.doFishAdd(this.fish).then((res) => {
+        if (res.code === api.CODE_SUCCESS) {
+          this.$message.success(res.msg);
+          this.fish.url = "";
+          this.fish.content = "来摸个鱼吧";
+          this.fish.topicId = "";
+          this.fish.urlTitle = "";
+          this.fish.urlCover = "";
+          this.fish.images = [];
+          this.selectedTopicName = "";
+        } else {
+          this.$message.error(res.msg);
+        }
+      });
     },
-    onImageMouseLeave(index){
-      let cover = document.getElementById('image-cvoer' + index);
-      if(cover){
-        cover.style.display = 'none';
+    onTagClose() {
+      this.fish.topicId = "";
+      this.selectedTopicName = "";
+    },
+    doImageItemDelete(index) {
+      this.fish.images.splice(index, 1);
+      if (this.fish.images.length < 9) {
+        this.isImageUploadShow = true;
+      }
+    },
+    doPreviewShow(url) {
+      this.imagePreviewShow = true;
+      this.imagePreviewurl = url;
+    },
+    onImageMouseEnter(index) {
+      let cover = document.getElementById("image-cvoer" + index);
+      if (cover) {
+        cover.style.display = "block";
+      }
+    },
+    onImageMouseLeave(index) {
+      let cover = document.getElementById("image-cvoer" + index);
+      if (cover) {
+        cover.style.display = "none";
       }
     },
     showImageUpload() {
       this.isImagePartShow = !this.isImagePartShow;
-      if (this.fish.images.length < 9){
-        this.isImageUploadShow = !this.isImageUploadShow;
+      if (this.fish.images.length < 9) {
+        this.isImageUploadShow = true;
       }
     },
     onImageUploadSuccess(response, file, fileList) {
@@ -223,9 +286,10 @@ export default {
         }
       }
     },
-    onTopicItemClick(topicItemId) {
+    onTopicItemClick(topicItemId, topicName) {
       this.fish.topicId = topicItemId;
       this.isTopicListShow = false;
+      this.selectedTopicName = topicName;
     },
     closeLink() {
       this.fish.url = "";
@@ -238,6 +302,7 @@ export default {
           this.fish.urlTitle = result.obj.title;
           this.fish.urlCover = result.obj.cover;
           this.$message.success(result.msg);
+          this.isUrlInputShow = false;
         } else {
           this.$message.error(result.msg);
         }
@@ -261,10 +326,35 @@ export default {
   },
   mounted() {
     this.loadTopicList();
+    let postBtnPart = document.getElementById('post-btn-part');
+    if(postBtnPart){
+      postBtnPart.addEventListener("mousedown", function (event) {
+        event.preventDefault();
+      })
+    }
   },
 };
 </script>
 <style>
+.selected-topic {
+  cursor: pointer;
+}
+.dialog-part .el-dialog_headerbtn {
+  right: -20px;
+}
+.dialog-part .el-icon-close {
+  color: white;
+  font-size: 18px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 50%;
+  margin-right: -45px;
+  margin-top: 10px;
+}
+.dialog-part .el-dialog {
+  background: transparent;
+  box-shadow: none;
+}
 .image-upload-part .image-item {
   cursor: pointer;
   position: relative;
@@ -277,15 +367,14 @@ export default {
   margin-right: 10px;
   margin-bottom: 5px;
   object-fit: cover;
-
 }
-.image-upload-part .image-item .image-cvoer{
+.image-upload-part .image-item .image-cvoer {
   position: absolute;
   width: 148px;
   height: 148px;
   left: 0;
   top: 0;
-  background: rgba(0, 0, 0, .3);
+  background: rgba(0, 0, 0, 0.3);
   display: none;
   text-align: center;
   line-height: 148px;
@@ -295,8 +384,8 @@ export default {
   color: white;
   padding: 10px;
 }
-.image-cvoer span:hover{
-  opacity: .6;
+.image-cvoer span:hover {
+  opacity: 0.6;
 }
 
 .image-upload-part {
