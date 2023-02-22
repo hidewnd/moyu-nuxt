@@ -19,3 +19,8 @@ export const listTopices = ()=> {
 export const doFishAdd = (obj) => {
   return http.requestPost(baseUrl + API_MOYU + '/my/fish/', obj);
 }
+
+// 摸鱼列表
+export const listFish = (obj) => {
+  return http.requestPost(baseUrl + API_MOYU + '/my/fish/list', obj);
+}

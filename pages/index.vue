@@ -1,14 +1,14 @@
 <template>
   <div class="index-page clear-fix">
     <!-- 左部分 -->
-    <div v-if="topocList" class="centent-left-part float-left">
+    <div v-if="topicMenuList" class="centent-left-part float-left">
       <!-- 默认标签 -->
       <div class="centent-left-item moment-main-item-active">
         <span class="iconfont icontime_fill">推 荐</span>
       </div>
       <!-- 数据库标签 -->
       <div
-        v-for="(item, index) in topocList"
+        v-for="(item, index) in topicMenuList"
         :key="index"
         class="centent-left-item"
       >
@@ -40,7 +40,12 @@
               </span>
             </el-popover>
             <!-- 链接输入 -->
-            <el-popover placement="bottom-start" width="400" trigger="click" v-model="isUrlInputShow">
+            <el-popover
+              placement="bottom-start"
+              width="400"
+              trigger="click"
+              v-model="isUrlInputShow"
+            >
               <div class="link-input-part">
                 <el-input
                   class="link-input"
@@ -166,6 +171,38 @@
           </div>
         </div>
       </div>
+      <!-- 内容列表 -->
+      <div class="content-list-part">
+        <div
+          class="content-item"
+          v-for="(item, index) in myContentLKist"
+          :key="index"
+        >
+          <div class="my-user-info clear-fix">
+            <div class="user-avator float-left">
+              <img :src="item.avator" />
+            </div>
+            <div class="user-info float-left">
+              <div class="user-name">{{ item.userName }}</div>
+              <div class="user-info-detail">
+                <span>{{ item.positon }}</span
+                >@
+                <span>{{ item.company }}</span>
+                <span>{{ item.createTime }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="my-content">
+            <div class="content-detail" v-html="item.content"></div>
+            <div class="my-images"></div>
+            <div class="my-content-topic" v-if="item.topicName !== null">
+              <span class="topic-name">{{ item.topicName }}</span>
+            </div>
+          </div>
+          <div class="my-action-par"></div>
+          <div class="my-content-par"></div>
+        </div>
+      </div>
     </div>
     <!-- 右部分 -->
     <div class="centent-right-part float-right">123</div>
@@ -200,7 +237,11 @@ export default {
         urlCover: "",
         images: [],
       },
+      pageFish: {
+        size: 10,
+      },
       topicList: [],
+      fishList: [],
       isTopicListShow: false,
       selectedTopicName: "",
     };
@@ -211,9 +252,11 @@ export default {
   },
   async asyncData() {
     let result = await api.listTopicMenu(9);
-    if (result.code == api.CODE_SUCCESS) {
+    let myContent = await api.listFish({});
+    if (result.code == api.CODE_SUCCESS && myContent.code == api.CODE_SUCCESS) {
       return {
-        topocList: result.obj,
+        topicMenuList: result.obj,
+        myContentLKist: myContent.obj.element,
       };
     }
   },
@@ -326,16 +369,71 @@ export default {
   },
   mounted() {
     this.loadTopicList();
-    let postBtnPart = document.getElementById('post-btn-part');
-    if(postBtnPart){
+    let postBtnPart = document.getElementById("post-btn-part");
+    if (postBtnPart) {
       postBtnPart.addEventListener("mousedown", function (event) {
         event.preventDefault();
-      })
+      });
     }
   },
 };
 </script>
 <style>
+.my-content-topic {
+  margin-top: 20px;
+}
+.my-content-topic .topic-name {
+  color: #0084ff;
+  border: 1px solid #0084ff;
+  font-size: 14px;
+  line-height: 28px;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+.my-content img {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+.my-content {
+  margin-left: 55px;
+  padding: 10px;
+}
+.my-content .content-detail {
+  font-size: 15px;
+  line-height: 26px;
+  text-decoration: none;
+  color: #909090;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+.user-info .user-info-detail {
+  color: #8a9aa9;
+  font-size: 13px;
+  line-height: 18px;
+}
+.user-info .user-name {
+  color: #666;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 30px;
+  margin-top: 3px;
+}
+.user-avator img {
+  width: 55px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.content-item {
+  background: white;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 5px;
+}
 .selected-topic {
   cursor: pointer;
 }
