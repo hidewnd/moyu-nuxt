@@ -7,4 +7,5 @@ You can directly use them in pages and other components without the need to impo
 **Tip:** If a component is conditionally rendered with `v-if` and is big, it is better to use `Lazy` or `lazy-` prefix to lazy load.
 
 - `<EmojiPanel>` | `<emoji-panel>` (components/EmojiPanel.vue)
+- `<ImageViewer>` | `<image-viewer>` (components/ImageViewer.vue)
 - `<RichTextInput>` | `<rich-text-input>` (components/RichTextInput.vue)

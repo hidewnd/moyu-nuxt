@@ -175,18 +175,18 @@
       <div class="content-list-part">
         <div
           class="content-item"
-          v-for="(item, index) in myContentLKist"
+          v-for="(item, index) in myContentList"
           :key="index"
         >
           <div class="my-user-info clear-fix">
             <div class="user-avator float-left">
-              <img :src="item.avator" />
+              <img :src="item.avatar" />
             </div>
             <div class="user-info float-left">
               <div class="user-name">{{ item.userName }}</div>
               <div class="user-info-detail">
-                <span>{{ item.positon }}</span
-                >@
+                <span>{{ item.positon }}</span>
+                <span>@</span>
                 <span>{{ item.company }}</span>
                 <span>{{ item.createTime }}</span>
               </div>
@@ -194,7 +194,9 @@
           </div>
           <div class="my-content">
             <div class="content-detail" v-html="item.content"></div>
-            <div class="my-images"></div>
+            <div class="my-images">
+              <image-viewer :target-images="item.images"></image-viewer>
+            </div>
             <div class="my-content-topic" v-if="item.topicName !== null">
               <span class="topic-name">{{ item.topicName }}</span>
             </div>
@@ -218,6 +220,7 @@
 import * as api from "../api/api";
 import EmojiPanelVue from "../components/EmojiPanel.vue";
 import RichTextInput from "../components/RichTextInput.vue";
+import ImageViewer from "../components/ImageViewer.vue";
 
 export default {
   name: "IndexPage",
@@ -249,16 +252,21 @@ export default {
   components: {
     EmojiPanelVue,
     RichTextInput,
+    ImageViewer,
   },
   async asyncData() {
     let result = await api.listTopicMenu(9);
     let myContent = await api.listFish({});
+    let topicMenuList = [];
+    let myContentList = [];
     if (result.code == api.CODE_SUCCESS && myContent.code == api.CODE_SUCCESS) {
-      return {
-        topicMenuList: result.obj,
-        myContentLKist: myContent.obj.element,
-      };
+      topicMenuList = result.obj;
+      myContentList = myContent.obj.element;
     }
+    return {
+      topicMenuList: topicMenuList,
+      myContentList: myContentList,
+    };
   },
   methods: {
     doFishAdd() {
@@ -391,7 +399,7 @@ export default {
   padding: 2px 8px;
   border-radius: 8px;
 }
-.my-content img {
+.my-content .content-detail img {
   width: 20px;
   height: 20px;
   vertical-align: middle;
@@ -400,6 +408,9 @@ export default {
 .my-content {
   margin-left: 55px;
   padding: 10px;
+}
+.my-content .my-images {
+  margin-top: 10px;
 }
 .my-content .content-detail {
   font-size: 15px;
@@ -429,10 +440,13 @@ export default {
 }
 .content-item {
   background: white;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   padding: 20px;
   border-radius: 5px;
+}
+.content-list-part {
+  margin-top: 20px;
 }
 .selected-topic {
   cursor: pointer;

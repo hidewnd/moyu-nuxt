@@ -1,4 +1,5 @@
 export { default as EmojiPanel } from '../..\\components\\EmojiPanel.vue'
+export { default as ImageViewer } from '../..\\components\\ImageViewer.vue'
 export { default as RichTextInput } from '../..\\components\\RichTextInput.vue'
 
 // nuxt/nuxt.js#8607

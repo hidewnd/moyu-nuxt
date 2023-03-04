@@ -63,7 +63,7 @@ body{
 }
 
 .main-container {
-  width: 50%;
+  width: 65%;
   margin: 0 auto;
 }
 
