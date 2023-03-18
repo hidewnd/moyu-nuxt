@@ -20,6 +20,7 @@ export default {
   css: [
     'element-ui/lib/theme-chalk/index.css',
     '~/static/font/iconfont.css',
+    '~/static/font2/iconfont.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins

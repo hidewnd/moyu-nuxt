@@ -201,8 +201,12 @@
               <span class="topic-name">{{ item.topicName }}</span>
             </div>
           </div>
-          <div class="my-action-par"></div>
-          <div class="my-content-par"></div>
+          <div class="my-action-part clear-fix">
+            <div class="float-felt iconfont icon-huifu"> 0</div>
+            <div class="float-felt my-thumb-up iconfont icon-dianzan"> 0</div>
+            <div class="float-felt iconfont icon-fenxiang"> 分享</div>
+          </div>
+          <div class="my-content-part"></div>
         </div>
       </div>
     </div>
@@ -387,6 +391,25 @@ export default {
 };
 </script>
 <style>
+.my-action-part .my-thumb-up{
+  border-left: 1px solid #f3f3f3;
+  border-right: 1px solid #f3f3f3;
+}
+.my-action-part div{
+  text-align: center;
+  width: 33%;
+  font-size: 18px;
+  line-height: 30px;
+  color: #8a93a0;
+  cursor: pointer;
+}
+.my-action-part{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #f3f3f3;
+  width: 100%;
+}
 .my-content-topic {
   margin-top: 20px;
 }
@@ -444,6 +467,7 @@ export default {
   margin-bottom: 10px;
   padding: 20px;
   border-radius: 5px;
+  padding: 20px 20px 0;
 }
 .content-list-part {
   margin-top: 20px;

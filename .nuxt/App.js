@@ -10,6 +10,8 @@ import '..\\node_modules\\element-ui\\lib\\theme-chalk\\index.css'
 
 import '..\\static\\font\\iconfont.css'
 
+import '..\\static\\font2\\iconfont.css'
+
 import _6f6c098b from '..\\layouts\\default.vue'
 
 const layouts = { "_default": sanitizeComponent(_6f6c098b) }
