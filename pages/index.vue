@@ -202,11 +202,13 @@
             </div>
           </div>
           <div class="my-action-part clear-fix">
-            <div class="float-felt iconfont icon-huifu"> 0</div>
-            <div class="float-felt my-thumb-up iconfont icon-dianzan"> 0</div>
+            <div class="float-felt iconfont icon-huifu" @click="showCommentList(item.id)"> {{ item.commentCount }}</div>
+            <div class="float-felt my-thumb-up iconfont icon-dianzan"> {{ item.thumbUpCount }}</div>
             <div class="float-felt iconfont icon-fenxiang"> 分享</div>
           </div>
-          <div class="my-content-part"></div>
+          <div class="my-content-part" :id="'my-content-part_' + item.id" style="display:none;">
+
+          </div>
         </div>
       </div>
     </div>
@@ -378,6 +380,12 @@ export default {
         }
       });
     },
+    showCommentList(myId) {
+      let element = document.getElementById(myId)
+      if(element) {
+        element.style.display = element.style.display == 'block' ? 'none' : 'block';
+      }
+    },
   },
   mounted() {
     this.loadTopicList();
@@ -391,10 +399,20 @@ export default {
 };
 </script>
 <style>
+
+.my-content-part {
+  width: 100%;
+  height: 100px;
+  background: orange;
+}
 .my-action-part .my-thumb-up{
   border-left: 1px solid #f3f3f3;
   border-right: 1px solid #f3f3f3;
 }
+.my-action-part div:hover {
+  opacity: .8;
+}
+
 .my-action-part div{
   text-align: center;
   width: 33%;
@@ -402,6 +420,7 @@ export default {
   line-height: 30px;
   color: #8a93a0;
   cursor: pointer;
+  user-select: none;
 }
 .my-action-part{
   display: flex;
