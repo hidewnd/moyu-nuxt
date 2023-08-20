@@ -206,8 +206,19 @@
             <div class="float-felt my-thumb-up iconfont icon-dianzan"> {{ item.thumbUpCount }}</div>
             <div class="float-felt iconfont icon-fenxiang"> 分享</div>
           </div>
-          <div class="my-content-part" :id="'my-content-part_' + item.id" style="display:none;">
+          <!-- 评论模块 -->
+          <div class="my-comment-part" :id="'my-comment-part_' + item.id" style="display:none;">
+            <div class="comment-box">
+              <!-- 头像 -->
+              <el-avatar size="medium" :src="circleUrl"></el-avatar>
+              <!-- 输入框 -->
+              <textarea class="comment-input-box" :id="'comment-input-box' + item.id"></textarea>
+              <!-- 提交按钮 -->
+              <el-button type="primary" @click="onCommentReply(itme.id)">回复</el-button>
+            </div>
+            <div class="sub-comment-box">
 
+            </div>
           </div>
         </div>
       </div>
@@ -227,11 +238,13 @@ import * as api from "../api/api";
 import EmojiPanelVue from "../components/EmojiPanel.vue";
 import RichTextInput from "../components/RichTextInput.vue";
 import ImageViewer from "../components/ImageViewer.vue";
+import CommentListView from "../components/CommentListView.vue";
 
 export default {
   name: "IndexPage",
   data() {
     return {
+      circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
       isUrlInputShow: false,
       imagePreviewurl: "",
       imagePreviewShow: false,
@@ -259,6 +272,7 @@ export default {
     EmojiPanelVue,
     RichTextInput,
     ImageViewer,
+    CommentListView,
   },
   async asyncData() {
     let result = await api.listTopicMenu(9);
@@ -275,6 +289,13 @@ export default {
     };
   },
   methods: {
+    onCommentReply(MyId){
+      let commentInputBox = document.getElementById('comment-input-box' + MyId);
+      if(commentInputBox){
+        let text = commentInputBox.value;
+      }
+
+    },
     doFishAdd() {
       if (this.fish.content.length === 0) {
         this.$message.error("摸鱼没有内容不行的呀");
@@ -381,7 +402,7 @@ export default {
       });
     },
     showCommentList(myId) {
-      let element = document.getElementById(myId)
+      let element = document.getElementById('my-comment-part_' + myId)
       if(element) {
         element.style.display = element.style.display == 'block' ? 'none' : 'block';
       }
@@ -399,11 +420,36 @@ export default {
 };
 </script>
 <style>
+.comment-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.comment-input-box:focus{
+  outline: none;
+  border-color: #409eff;
+}
+.comment-input-box {
+  resize: vertical;
+  width: 80%;
+  min-height: 50px;
+  display: block;
+  padding: 5px 15px;
+  line-height: 1.5;
+  box-sizing: border-box;
+  font-size: inherit;
+  color: #606266;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  transition: border-color .2s cubic-bezier(.645, .045,.355, 1);
 
-.my-content-part {
+}
+.my-comment-part {
   width: 100%;
-  height: 100px;
-  background: orange;
+  border-top: #f3f3f3 solid 3px;
+  padding: 10px 0;
 }
 .my-action-part .my-thumb-up{
   border-left: 1px solid #f3f3f3;
