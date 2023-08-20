@@ -64,16 +64,16 @@
               <div class="cm-action-part">
                 <span v-text="item.createTime"></span>
                 <span class="cm-comment-response el-icon-chat-round">
-                  回复</span
-                >
+                  回复
+                </span>
               </div>
             </div>
           </div>
         </div>
         <div class="cm-input-box" :id="'cm-input-' + item.id">
-          <el-input resize="none" class="cm-reply-box" type="textarea">
-          </el-input>
-          <span class="cm-reply-btn">回复</span>
+          <textarea class="cm-reply-box" :id="'cm-input-box-' + item.id" resize="none" type="textarea" >
+          </textarea>
+          <el-button type="primary" class="cm-reply-btn" @click="doReply(item.id)" >回复</el-button>
         </div>
       </div>
     </div>
@@ -81,76 +81,99 @@
 </template>
 <script>
 export default {
-    props: {
-      commentList: Array
-    },
-    data() {
-      return {
-        comment: {
-          commendId: '',
-          content: '',
-          momentId: ''
-        },
-        subComment: {
-          commendId: '',
-          content: '',
-          momentId: ''
-        },
-        isSubReply: false
+  props: {
+    commentList: Array,
+  },
+  data() {
+    return {
+      comment: {
+        commendId: "",
+        content: "",
+        momentId: "",
+      },
+      subComment: {
+        commendId: "",
+        content: "",
+        momentId: "",
+      },
+      isSubReply: false,
+    };
+  },
+  methods: {
+    doReply(boxId) {
+      let inputBox = document.getElementById("cm-input-box-" + boxId);
+      if (this.isSubReply) {
+        this.subComment.content = inputBox.value;
+        //通知外部
+        this.$emit("onSubReply", this.subComment);
+      } else {
+        this.comment.content = inputBox.value;
+        this.$emit("onReply", this.comment);
       }
     },
-    methods: {
-      doReply(boxId) {
-        let inputBox = document.getElementById('cm-input-box-' + boxId);
-        if (this.isSubReply) {
-          this.subComment.content = inputBox.value;
-          //通知外部
-          this.$emit('onSubReply', this.subComment);
-        } else {
-          this.comment.content = inputBox.value;
-          this.$emit('onReply', this.comment);
-        }
-      },
-      onSubItemReply(subItem) {
-        this.isSubReply = true;
-        let commentId = subItem.commentId;
-        this.handleInputBox(commentId, subItem.userName);
-        //赋值给到评论
-        this.subComment.commendId = subItem.id;
-        this.subComment.momentId = subItem.momentId;
-      },
-      handleInputBox(id, userName) {
-        let inputBoxContainer = document.getElementById('cm-input-' + id);
-        if (inputBoxContainer) {
-          inputBoxContainer.style.display = 'block';
-        }
-        let inputBox = document.getElementById('cm-input-box-' + id);
-        if (inputBox) {
-          inputBox.focus();
-          inputBox.value = '';
-          inputBox.setAttribute('placeholder', '回复@' + userName);
-        }
-      },
-      onItemReply(item) {
-        this.isSubReply = false;
-        let commentId = item.id;
-        this.handleInputBox(commentId, item.userName);
-        //赋值给到评论
-        this.comment.commendId = commentId;
-        this.comment.momentId = item.momentId;
+    onSubItemReply(subItem) {
+      this.isSubReply = true;
+      let commentId = subItem.commentId;
+      this.handleInputBox(commentId, subItem.userName);
+      //赋值给到评论
+      this.subComment.commendId = subItem.id;
+      this.subComment.momentId = subItem.momentId;
+    },
+    handleInputBox(id, userName) {
+      let inputBoxContainer = document.getElementById('cm-input-' + id);
+      if (inputBoxContainer) {
+        inputBoxContainer.style.display = "block";
       }
-    }
-  }
+      let inputBox = document.getElementById("cm-input-box-" + id);
+      if (inputBox) {
+        inputBox.focus();
+        inputBox.value = "";
+        inputBox.setAttribute("placeholder", "回复@" + userName);
+      }
+    },
+    onItemReply(item) {
+      this.isSubReply = false;
+      let commentId = item.id;
+      this.handleInputBox(commentId, item.userName);
+      //赋值给到评论
+      this.comment.commendId = commentId;
+      this.comment.momentId = item.momentId;
+    },
+  },
+};
 </script>
-<style>
+<style scoped>
+
+.cm-reply-btn {
+  background-color: #409eff;
+  border-color: #409eff;
+  color: #fff;
+  float: right;
+}
 .cm-input-box {
   display: none;
   margin-top: 10px;
   margin-bottom: 10px;
 }
-
+.cm-reply-box:focus{
+  outline: none;
+  border-color: #409eff;
+}
 .cm-reply-box {
-  width: 610px;
+  resize: vertical;
+  width: 80%;
+  min-height: 50px;
+  display: block;
+  padding: 5px 15px;
+  line-height: 1.5;
+  box-sizing: border-box;
+  font-size: inherit;
+  color: #606266;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  transition: border-color .2s cubic-bezier(.645, .045,.355, 1);
 }
 
 .comment-list {

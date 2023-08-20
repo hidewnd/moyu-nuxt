@@ -214,7 +214,7 @@
               <!-- 输入框 -->
               <textarea class="comment-input-box" :id="'comment-input-box' + item.id"></textarea>
               <!-- 提交按钮 -->
-              <el-button type="primary" @click="onCommentReply(itme.id)">回复</el-button>
+              <el-button type="primary" @click="onCommentReply(item.id)">回复</el-button>
             </div>
             <div class="sub-comment-box">
               <CommentListView
