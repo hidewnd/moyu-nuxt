@@ -24,3 +24,8 @@ export const doFishAdd = (obj) => {
 export const listFish = (obj) => {
   return http.requestPost(baseUrl + API_MOYU + '/my/fish/list', obj);
 }
+
+// 获取评论列表
+export const listCommentById = (obj) => {
+  return http.requestPost(baseUrl + API_MOYU + '/comment/list', obj);
+}

@@ -217,7 +217,10 @@
               <el-button type="primary" @click="onCommentReply(itme.id)">回复</el-button>
             </div>
             <div class="sub-comment-box">
-
+              <CommentListView
+                :commentList="commentList"
+                @onSubReply="onSubReply"
+                @onReply="onReply" />
             </div>
           </div>
         </div>
@@ -266,6 +269,7 @@ export default {
       fishList: [],
       isTopicListShow: false,
       selectedTopicName: "",
+      commentList: [],
     };
   },
   components: {
@@ -289,6 +293,25 @@ export default {
     };
   },
   methods: {
+    listCommentById(MyId){
+      let query = {
+        "query": {
+          "myId": MyId
+        }
+      }
+      api.listCommentById(query).then((res) => {
+        console.log(res)
+        if(res.code == api.CODE_SUCCESS){
+          this.commentList = res.obj.element
+        }
+      })
+    },
+    onSubReply(){
+
+    },
+    onReply(){
+
+    },
     onCommentReply(MyId){
       let commentInputBox = document.getElementById('comment-input-box' + MyId);
       if(commentInputBox){
@@ -406,6 +429,7 @@ export default {
       if(element) {
         element.style.display = element.style.display == 'block' ? 'none' : 'block';
       }
+      this.listCommentById(myId)
     },
   },
   mounted() {

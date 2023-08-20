@@ -53,10 +53,10 @@
             </div>
             <div class="cm-sub-content-part">
               <div class="cm-content">
-                <span>回复@</span>
+                <span>回复</span>
                 <a
                   :href="'https://www.sunofbeach.net/u/' + subItem.targetUserId"
-                  >{{ subItem.targetUserName }}</a
+                  >@{{ subItem.targetUserName }}</a
                 >
                 :
                 <span v-text="item.content"></span>
