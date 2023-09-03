@@ -294,6 +294,7 @@ export default {
   },
   methods: {
     listCommentById(myId){
+      this.checkUserAvatar();
       let query = {
         "query": {
           "myId": myId
@@ -435,8 +436,15 @@ export default {
       }
       this.listCommentById(myId)
     },
+    checkUserAvatar(){
+      let avatar = window.localStorage.getItem('avatar');
+      if(avatar) {
+        this.circleUrl = avatar;
+      }
+    },
   },
   mounted() {
+
     this.loadTopicList();
     let postBtnPart = document.getElementById("post-btn-part");
     if (postBtnPart) {

@@ -1,7 +1,10 @@
 import http from "./http";
 export const baseUrl = "http://localhost:8080";
+export const NOT_LOGIN_PAGE = "http://localhost:8081/login";
+export const LOGIN_URL = "http://localhost:3000";
 export const CODE_SUCCESS = 2000;
 const API_MOYU = '/my';
+const API_UCENTER = '/uc';
 // 侧边栏话题
 export const listTopicMenu = (count) => {
   return http.requestGet(baseUrl + API_MOYU + '/topic/menu/' + count);
@@ -28,4 +31,15 @@ export const listFish = (obj) => {
 // 获取评论列表
 export const listCommentById = (obj) => {
   return http.requestPost(baseUrl + API_MOYU + '/comment/list', obj);
+}
+
+
+// 检查Token
+export const checkToken = (obj) => {
+  return http.requestPost(baseUrl + API_UCENTER + '/user/token', obj);
+}
+
+// 检查Token
+export const logout = (obj) => {
+  return http.requestPost(baseUrl + API_UCENTER + '/user/logout', obj);
 }

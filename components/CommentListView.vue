@@ -39,7 +39,9 @@
           >
             <div class="cm-user-info-part">
               <img class="cm-avatar" :src="subItem.avatar" />
-              <span class="cm-nickname" v-text="subItem.userName"></span>
+              <span class="cm-nickname">
+                <a :href="'/u/' + subItem.userId" target="_blank" v-text="subItem.userName"></a>
+              </span>
               <span
                 class="cm-position"
                 v-text="subItem.position ? subItem.position : '无业'"
@@ -52,7 +54,7 @@
             <div class="cm-sub-content-part">
               <div class="cm-content">
                 <span>回复</span>
-                <a :href="'https://www.sunofbeach.net/u/' + subItem.targetUserId">@{{ subItem.targetUserName }}</a >
+                <a :href="'/u/' + subItem.targetUserId">@{{ subItem.targetUserName }}</a >
                 :<span v-text="item.content"></span>
               </div>
               <div class="cm-action-part">
@@ -233,12 +235,17 @@ body {
   align-items: center;
 }
 
+.cm-content a {
+  text-decoration: none;
+  color: #0084ff;
+  font-size: 14px;
+}
 .cm-content {
   font-size: 14px;
 }
 
 .cm-content-part {
-  margin-left: 40px;
+  margin-left: 50px;
 }
 
 .comment-list {
