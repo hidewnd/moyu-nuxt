@@ -202,6 +202,7 @@
             </div>
           </div>
           <div class="my-action-part clear-fix">
+            <!-- 评论数量 -->
             <div class="float-felt iconfont icon-huifu" @click="showCommentList(item.id)"> {{ item.commentCount }}</div>
             <div class="float-felt my-thumb-up iconfont icon-dianzan"> {{ item.thumbUpCount }}</div>
             <div class="float-felt iconfont icon-fenxiang"> 分享</div>
@@ -218,7 +219,7 @@
             </div>
             <div class="sub-comment-box">
               <CommentListView
-                :commentList="commentList"
+                :ref="'commentListView_' + item.id"
                 @onSubReply="onSubReply"
                 @onReply="onReply" />
             </div>
@@ -269,7 +270,6 @@ export default {
       fishList: [],
       isTopicListShow: false,
       selectedTopicName: "",
-      commentList: [],
     };
   },
   components: {
@@ -293,16 +293,19 @@ export default {
     };
   },
   methods: {
-    listCommentById(MyId){
+    listCommentById(myId){
       let query = {
         "query": {
-          "myId": MyId
+          "myId": myId
         }
       }
+      let THIS = this;
       api.listCommentById(query).then((res) => {
-        console.log(res)
         if(res.code == api.CODE_SUCCESS){
-          this.commentList = res.obj.element
+          let taregtView = THIS.$refs['commentListView_'+ myId][0];
+          if(taregtView){
+            taregtView.commentList = res.obj.element
+          }
         }
       })
     },
@@ -316,6 +319,7 @@ export default {
       let commentInputBox = document.getElementById('comment-input-box' + MyId);
       if(commentInputBox){
         let text = commentInputBox.value;
+        console.log('text ==>', text)
       }
 
     },

@@ -10,7 +10,7 @@
     <div class="comment-item" v-for="(item, index) in commentList" :key="index">
       <div class="cm-user-info-part">
         <img class="cm-avatar" :src="item.avatar" />
-        <span class="cm-nickname" v-text="item.userName"></span>
+        <a class="cm-nickname" :href="'/u/' + item.userId" target="_blank" v-text="item.userName"></a>
         <span
           class="cm-position"
           v-text="item.position ? item.position : '无业'"
@@ -29,9 +29,7 @@
           <span
             class="cm-comment-response el-icon-chat-round"
             @click="onItemReply(item)"
-          >
-            回复</span
-          >
+          >回复</span>
         </div>
         <div class="cm-sub-comment-list">
           <div
@@ -54,16 +52,13 @@
             <div class="cm-sub-content-part">
               <div class="cm-content">
                 <span>回复</span>
-                <a
-                  :href="'https://www.sunofbeach.net/u/' + subItem.targetUserId"
-                  >@{{ subItem.targetUserName }}</a
-                >
-                :
-                <span v-text="item.content"></span>
+                <a :href="'https://www.sunofbeach.net/u/' + subItem.targetUserId">@{{ subItem.targetUserName }}</a >
+                :<span v-text="item.content"></span>
               </div>
               <div class="cm-action-part">
                 <span v-text="item.createTime"></span>
-                <span class="cm-comment-response el-icon-chat-round">
+                <!-- 子评论回复 -->
+                <span class="cm-comment-response el-icon-chat-round" @click="onSubItemReply(subItem)">
                   回复
                 </span>
               </div>
@@ -71,19 +66,22 @@
           </div>
         </div>
         <div class="cm-input-box" :id="'cm-input-' + item.id">
-          <textarea class="cm-reply-box" :id="'cm-input-box-' + item.id" resize="none" type="textarea" >
-          </textarea>
-          <el-button type="primary" class="cm-reply-btn" @click="doReply(item.id)" >回复</el-button>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <textarea class="cm-reply-box" :id="'cm-input-box-' + item.id" resize="none" type="textarea" ></textarea>
+            <el-button type="primary" class="cm-reply-btn" @click="doReply(item.id)" >回复</el-button>
+          </div>
         </div>
+      </div>
+      <div class="cm-bottom-box">
+          <div class="cm-no-more" v-if="!hasMore">~没有更多内容了~</div>
+          <div class="cm-loader-more" v-else>加载更多...</div>
       </div>
     </div>
   </div>
 </template>
 <script>
 export default {
-  props: {
-    commentList: Array,
-  },
+  name: "CommentListView",
   data() {
     return {
       comment: {
@@ -96,7 +94,9 @@ export default {
         content: "",
         momentId: "",
       },
+      commentList: [],
       isSubReply: false,
+      hasMore: false,
     };
   },
   methods: {
@@ -114,15 +114,18 @@ export default {
     onSubItemReply(subItem) {
       this.isSubReply = true;
       let commentId = subItem.commentId;
-      this.handleInputBox(commentId, subItem.userName);
+      this.handleInputBox(commentId, subItem.userName, subItem.id);
       //赋值给到评论
       this.subComment.commendId = subItem.id;
       this.subComment.momentId = subItem.momentId;
     },
-    handleInputBox(id, userName) {
+    handleInputBox(id, userName, subId) {
       let inputBoxContainer = document.getElementById('cm-input-' + id);
-      if (inputBoxContainer) {
+      if (inputBoxContainer && subId) {
         inputBoxContainer.style.display = "block";
+        // this.$emit("changeDisplay", 'cm-input-' + id, subId);
+      }else {
+        inputBoxContainer.style.display = inputBoxContainer.style.display == 'block' ? 'none' : "block";
       }
       let inputBox = document.getElementById("cm-input-box-" + id);
       if (inputBox) {
@@ -131,10 +134,11 @@ export default {
         inputBox.setAttribute("placeholder", "回复@" + userName);
       }
     },
-    onItemReply(item) {
+    onItemReply(item, subItem) {
       this.isSubReply = false;
       let commentId = item.id;
-      this.handleInputBox(commentId, item.userName);
+      let userName = subItem ? subItem.userName : item.userName;
+      this.handleInputBox(commentId, userName);
       //赋值给到评论
       this.comment.commendId = commentId;
       this.comment.momentId = item.momentId;
@@ -142,8 +146,11 @@ export default {
   },
 };
 </script>
-<style scoped>
-
+<style>
+.cm-bottom-box{
+  text-align: center;
+  margin-bottom: 10px;
+}
 .cm-reply-btn {
   background-color: #409eff;
   border-color: #409eff;
@@ -161,7 +168,7 @@ export default {
 }
 .cm-reply-box {
   resize: vertical;
-  width: 80%;
+  width: 85%;
   min-height: 50px;
   display: block;
   padding: 5px 15px;
@@ -214,6 +221,7 @@ body {
 
 .cm-comment-response {
   cursor: pointer;
+  padding-bottom: 5px;
 }
 
 .cm-action-part {
@@ -234,11 +242,18 @@ body {
 }
 
 .comment-list {
+  color: #999999;
   background: white;
+}
+
+.comment-list a{
+  text-decoration: none;
+  color: #409eff;
 }
 
 .comment-item {
   padding: 10px 10px 0;
+  border-bottom: 1px solid #f1f1f1;
 }
 
 .cm-user-info-part .cm-position,
@@ -276,6 +291,7 @@ body {
 .cm-sub-comment-item .cm-nickname {
   font-size: 14px;
   font-weight: 600;
+  cursor: pointer;
   margin-left: 5px;
   margin-right: 5px;
 }
