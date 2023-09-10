@@ -55,7 +55,7 @@
               <div class="cm-content">
                 <span>回复</span>
                 <a :href="'/u/' + subItem.targetUserId">@{{ subItem.targetUserName }}</a >
-                :<span v-text="item.content"></span>
+                :<span v-text="subItem.content"></span>
               </div>
               <div class="cm-action-part">
                 <span v-text="item.createTime"></span>
@@ -74,10 +74,10 @@
           </div>
         </div>
       </div>
-      <div class="cm-bottom-box">
-          <div class="cm-no-more" v-if="!hasMore">~没有更多内容了~</div>
-          <div class="cm-loader-more" v-else>加载更多...</div>
-      </div>
+    </div>
+    <div class="cm-bottom-box">
+        <div class="cm-no-more" v-if="!hasMore">~没有更多内容了~</div>
+        <div class="cm-loader-more" v-else>加载更多...</div>
     </div>
   </div>
 </template>
@@ -89,37 +89,61 @@ export default {
       comment: {
         commendId: "",
         content: "",
-        momentId: "",
+        myId: '',
       },
       subComment: {
         commendId: "",
+        subCommentId: "",
         content: "",
-        momentId: "",
+        myId: '',
       },
       commentList: [],
       isSubReply: false,
       hasMore: false,
+      myId: '',
+      targetBoxId: ""
     };
   },
   methods: {
+    clearTargetBox(){
+      let inputBox = document.getElementById("cm-input-box-" + this.targetBoxId);
+      if(inputBox){
+        inputBox.value = "";
+      }
+    },
     doReply(boxId) {
+      this.targetBoxId = boxId;
       let inputBox = document.getElementById("cm-input-box-" + boxId);
       if (this.isSubReply) {
         this.subComment.content = inputBox.value;
+        this.subComment.myId = this.myId;
         //通知外部
-        this.$emit("onSubReply", this.subComment);
+        this.$emit("onReply", this.subComment);
       } else {
         this.comment.content = inputBox.value;
+        this.comment.myId = this.myId;
         this.$emit("onReply", this.comment);
       }
     },
+    // 当点击子评论回复按钮
     onSubItemReply(subItem) {
       this.isSubReply = true;
       let commentId = subItem.commentId;
       this.handleInputBox(commentId, subItem.userName, subItem.id);
       //赋值给到评论
-      this.subComment.commendId = subItem.id;
-      this.subComment.momentId = subItem.momentId;
+      this.subComment.subCommentId = subItem.id;
+      this.subComment.commendId = commentId;
+      this.subComment.myId = subItem.myId;
+    },
+    // 当点击评论回复按钮
+    onItemReply(item, subItem) {
+      this.isSubReply = false;
+      let commentId = item.id;
+      let userName = subItem ? subItem.userName : item.userName;
+      this.handleInputBox(commentId, userName);
+      //赋值给到评论
+      this.comment.commendId = commentId;
+      this.comment.myId = item.myId;
     },
     handleInputBox(id, userName, subId) {
       let inputBoxContainer = document.getElementById('cm-input-' + id);
@@ -136,15 +160,7 @@ export default {
         inputBox.setAttribute("placeholder", "回复@" + userName);
       }
     },
-    onItemReply(item, subItem) {
-      this.isSubReply = false;
-      let commentId = item.id;
-      let userName = subItem ? subItem.userName : item.userName;
-      this.handleInputBox(commentId, userName);
-      //赋值给到评论
-      this.comment.commendId = commentId;
-      this.comment.momentId = item.momentId;
-    },
+
   },
 };
 </script>

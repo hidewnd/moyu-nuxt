@@ -220,7 +220,6 @@
             <div class="sub-comment-box">
               <CommentListView
                 :ref="'commentListView_' + item.id"
-                @onSubReply="onSubReply"
                 @onReply="onReply" />
             </div>
           </div>
@@ -270,6 +269,10 @@ export default {
       fishList: [],
       isTopicListShow: false,
       selectedTopicName: "",
+      targeComment: {
+        myId: "",
+        content: "",
+      }
     };
   },
   components: {
@@ -306,23 +309,53 @@ export default {
           let taregtView = THIS.$refs['commentListView_'+ myId][0];
           if(taregtView){
             taregtView.commentList = res.obj.element
+            taregtView.myId = myId
           }
         }
       })
     },
-    onSubReply(){
-
+    onReply(comment){
+      console.log('comment', comment)
+      api.doSubCommentAdd(comment)
+      .then((res)=> {
+        if(res.code == api.CODE_SUCCESS){
+          this.$message.success(res.msg);
+          if(comment.myId){
+            this.listCommentById(comment.myId)
+            let targetView = THIS.$refs['commentListView_'+ comment.myId][0];
+            if(targetView){
+              targetView.clearTargetBox();
+            }
+          }
+        }else {
+          this.$message.error(res.msg)
+        }
+      })
     },
-    onReply(){
-
-    },
-    onCommentReply(MyId){
-      let commentInputBox = document.getElementById('comment-input-box' + MyId);
+    onCommentReply(myId){
+      let commentInputBox = document.getElementById('comment-input-box' + myId);
       if(commentInputBox){
         let text = commentInputBox.value;
         console.log('text ==>', text)
+        this.targeComment.content = text;
+        this.targeComment.myId = myId;
+        commentInputBox.value = '';
       }
-
+      // 检查数据
+      if(this.targeComment.content === ''){
+        this.$message.error("请输入内容")
+        return;
+      }
+      api.doCommentAdd(this.targeComment)
+      .then((res) => {
+        if(res.code === api.CODE_SUCCESS){
+          this.$message.success(res.msg);
+          this.listCommentById(myId);
+          this.targeComment.content = ""
+        } else {
+          this.$message.error(res.msg);
+        }
+      })
     },
     doFishAdd() {
       if (this.fish.content.length === 0) {
